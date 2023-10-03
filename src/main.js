@@ -6,7 +6,7 @@ import LogoText from "./assets/logo-text.png";
 import Grid from "./assets/grid-bg.png";
 
 const Component_App = ({}) => {
-  const activeExample = observe("table")
+  const activeExample = observe(null)
 
   const examples = {
     todo: () => <Todo />,
