@@ -53,7 +53,7 @@ const Component_App = ({}) => {
         <div>
           <p className="tagline" style={{ textAlign: "center", marginBottom: "25px" }}>
             A lightweight, zero dependency, no Virtual DOM,
-            <bold className="highlight">{" truely"}</bold> reactive js framework.
+            <bold className="highlight">{" truly"}</bold> reactive js framework.
           </p>
 
 
