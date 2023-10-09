@@ -1,6 +1,6 @@
 # Cosmq JS Example
 
-This is an example website for [Cosmq JS](https://github.com/DDinenno/cosmq-js)
+This is an example website for <a href="https://github.com/DDinenno/cosmq-js">Cosmq JS</a>
 
 ## getting started
 
