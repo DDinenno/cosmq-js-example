@@ -1,5 +1,4 @@
 import Cosmq, { observe, compute, observableArray } from "cosmq-js";
-import Virtualizer from "./Virtualizer";
 
 const columns = ["Id", "Name", "Birth Date", "Profession", "active"];
 const firstNames = [
