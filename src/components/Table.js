@@ -89,7 +89,7 @@ const Component_Table = ({}) => {
   const total = compute(data.length);
 
   const activeUsers = compute(() =>
-    data.reduce((sum, curr) => sum + (curr.active ? 1 : 0), 0)
+    data.reduce((sum, curr) => sum + (curr.active ? 1 : 0), 0),
   );
 
   const handleInput = (e) => {
@@ -97,7 +97,7 @@ const Component_Table = ({}) => {
   };
 
   const editingValue = compute(
-    data.find((r) => r.Id === activeRow)?.[activeCell]
+    data.find((r) => r.Id === activeRow)?.[activeCell],
   );
 
   const getColumn = (row, col) => {
@@ -210,7 +210,7 @@ const Component_Table = ({}) => {
           <div>
             <label>Editing Value:</label>
             <span>{editingValue}</span>
-          </div>
+          </div>,
         )}
       </div>
       <div
@@ -248,8 +248,6 @@ const Component_Table = ({}) => {
                   >
                     X
                   </button>
-
-                  {IF(row.Name === "test")(<div>testing</div>)}
                 </td>
               </tr>
             ))}
