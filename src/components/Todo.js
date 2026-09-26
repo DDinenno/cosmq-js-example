@@ -1,4 +1,4 @@
-import Cosmq, { observe, observableArray, compute } from "cosmq-js";
+import Cosmq, { observe } from "cosmq-js";
 
 const initial = [
   { id: 1, name: "Wake up" },
@@ -7,13 +7,17 @@ const initial = [
   { id: 4, name: "Rinse & repeat all steps above" },
 ];
 
-const Component_Todo = ({}) => {
+const Component_Todo = ({ }) => {
   const items = observe(initial);
   const text = observe("");
 
   const handleSort = () => {
     items = [...items.value].sort(() => (Math.random() > 0.5 ? -1 : 1));
   };
+
+  const handleReset = () => {
+    items = initial; text = "";
+  }
 
   const handleInput = (e) => {
     text = e.target.value ?? "";
@@ -50,12 +54,13 @@ const Component_Todo = ({}) => {
         />
         <button
           handle:click={handleClick}
-          // disabled={compute(text === "" || text === null)}
-          disabled={compute(text === ("" || null))}
+          disabled={text === ("" || null)}
         >
           Add Item
         </button>
         <button handle:click={handleSort}>sort</button>
+        <button handle:click={handleReset}>reset</button>
+
       </div>
 
       {IF(items.length === 0)(<div>no items</div>)}
@@ -67,13 +72,10 @@ const Component_Todo = ({}) => {
       )}
 
       <ul>
-        {observableArray(
-          items,
-          {
-            getKey: (item) => item.id,
-          },
+        {items.$map(
           (item, i) => (
             <li
+              key={item.id}
               style={{
                 display: "flex",
                 justifyContent: "space-between",

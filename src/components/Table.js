@@ -1,90 +1,14 @@
-import Cosmq, { observe, compute, observableArray } from "cosmq-js";
+import Cosmq, { observe, compute } from "cosmq-js";
+import AddUserModal from "./AddUserModal"
+import { genRows, getId } from "../utils/random";
 
 const columns = ["Id", "Name", "Birth Date", "Profession", "active"];
-const firstNames = [
-  "Jane",
-  "Sally",
-  "Mary",
-  "Barbara",
-  "John",
-  "Bob",
-  "Rob",
-  "Sam",
-  "Saul",
-  "Walter",
-  "Jesse",
-];
-const lastNames = [
-  "Smith",
-  "Ross",
-  "Doe",
-  "Goodman",
-  "McGill",
-  "White",
-  "Pinkman",
-];
-const professions = [
-  "Singer",
-  "Love Guru",
-  "Painter",
-  "Criminal Lawyer",
-  "Chemical Engineer",
-];
 
-const getRandom = (list) => {
-  return list[Math.floor(Math.random() * list.length)];
-};
-
-const randomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-let currentId = 0;
-
-const makeRow = (columns) => {
-  const row = {};
-  currentId++;
-
-  columns.forEach((col) => {
-    switch (col) {
-      case columns[0]:
-        row[col] = currentId;
-        break;
-      case columns[1]:
-        row[col] = `${getRandom(firstNames)} ${getRandom(lastNames)}`;
-        break;
-      case columns[2]:
-        const day = randomNumber(1, 27);
-        const month = randomNumber(1, 12);
-        const year = randomNumber(1980, 2042);
-
-        row[col] = new Date(`${month}-${day}-${year}`).toLocaleDateString();
-        break;
-      case columns[3]:
-        row[col] = getRandom(professions);
-        break;
-      case columns[4]:
-        row[col] = Math.random() >= 0.2;
-        break;
-    }
-  });
-
-  return row;
-};
-
-const genRows = (columns, amount) => {
-  const rows = [];
-  while (rows.length < amount) {
-    rows.push(makeRow(columns));
-  }
-  return rows;
-};
-
-const Component_Table = ({}) => {
-  const data = observe(genRows(columns, 10));
+const Component_Table = ({ }) => {
+  const data = observe(genRows(columns, 4));
   const activeCell = observe(null);
   const activeRow = observe(null);
-  const amount = observe(data.length);
+  const addModalActive = observe(false);
 
   const total = compute(data.length);
 
@@ -92,18 +16,12 @@ const Component_Table = ({}) => {
     data.reduce((sum, curr) => sum + (curr.active ? 1 : 0), 0),
   );
 
-  const handleInput = (e) => {
-    amount = e.target.value;
-  };
-
-  const editingValue = compute(
-    data.find((r) => r.Id === activeRow)?.[activeCell],
-  );
-
   const getColumn = (row, col) => {
-    return (
-      <td>
-        {col === "active" ? (
+    switch (col) {
+      case "Id":
+        return <span style={{ padding: "0 25px" }}>{row.Id}</span>;
+      case "active":
+        return (
           <input
             type="checkbox"
             checked={row[col]}
@@ -117,7 +35,11 @@ const Component_Table = ({}) => {
               });
             }}
           />
-        ) : col === "Birth Date" ? (
+        )
+      case "Birth Date":
+        const formattedDate = new Date(row[col]).toISOString()?.split('T')?.[0]
+
+        return (
           <input
             style={{
               background: "transparent",
@@ -128,7 +50,7 @@ const Component_Table = ({}) => {
               color: "white",
             }}
             type="date"
-            value={row[col]}
+            value={formattedDate}
             handle:focus={(e) => {
               e.target.select();
               activeRow = row.Id;
@@ -144,7 +66,9 @@ const Component_Table = ({}) => {
               });
             }}
           />
-        ) : (
+        )
+      default:
+        return (
           <input
             style={{
               background: "transparent",
@@ -170,10 +94,28 @@ const Component_Table = ({}) => {
               });
             }}
           />
-        )}
-      </td>
-    );
+        )
+    }
   };
+
+  const handleAddUser = (user) => {
+    const newUser = {
+      ["Id"]: getId(),
+      ["Name"]: user.name,
+      ["Birth Date"]: new Date(`${user.birthDay}`).toLocaleDateString(),
+      ["Profession"]: user.profession,
+      ["active"]: true,
+    }
+
+    data = data.concat(newUser);
+    addModalActive = false
+
+  }
+
+  const handleRemoveUsers = (amountToRemove) => {
+    data = data.slice(0, data.length - amountToRemove);
+  }
+
 
   return (
     <div>
@@ -184,37 +126,44 @@ const Component_Table = ({}) => {
           height: "40px",
           marginBottom: "10px",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "cemountNodenter",
         }}
       >
-        <input type="number" value={amount} handle:input={handleInput} />
-        <button
-          className="alt"
-          handle:click={() => {
-            data = data.concat(genRows(columns, amount));
-          }}
-        >
-          Add
-        </button>
-        <button
-          handle:click={() => {
-            data = data.slice(0, data.length - amount);
-          }}
-        >
-          remove
-        </button>
-      </div>
-
-      <div style={{ minHeight: "30px", padding: "10px 0" }}>
-        {IF(editingValue)(
-          <div>
-            <label>Editing Value:</label>
-            <span>{editingValue}</span>
-          </div>,
+        {IF(addModalActive)(
+          <div style={{ position: "absolute", top: 0, left: 0, zIndex: 10000 }}>
+            <AddUserModal onSubmit={handleAddUser} onCancel={() => addModalActive = false} />
+          </div>
         )}
-      </div>
+
+        <div style={{ display: "flex", gap: "10px", justifyContent: "end", width: "100%" }}>
+          <button
+            className="alt"
+            handle:click={() => { addModalActive = true }}
+          >
+            Add User
+          </button>
+
+          <button
+            className=""
+            handle:click={() => {
+              data = data.concat(genRows(columns, 50));
+            }}
+          >
+            Add 50 Users
+          </button>
+
+          <button
+            className=""
+            handle:click={() => handleRemoveUsers(50)}
+          >
+            Remove 50 Users
+          </button>
+        </div>
+
+      </div >
+
       <div
-        virtualContainer
+        className="virtual-container"
         style={{ height: "300px", marginTop: "25px", overflowY: "auto" }}
       >
         <table
@@ -231,14 +180,14 @@ const Component_Table = ({}) => {
             </tr>
           </thead>
           <tbody>
-            {observableArray(data, { getKey: (row) => row.Id }, (row) => (
+            {data.$map(row => (
               <tr
                 key={`${row.Id}`}
                 style={{
                   opacity: row.active ? 1 : 0.5,
                 }}
               >
-                {columns.map((col) => getColumn(row, col))}
+                {columns.map((col) => <td>{getColumn(row, col)}</td>)}
 
                 <td>
                   <button
@@ -273,7 +222,7 @@ const Component_Table = ({}) => {
           Total <span className="highlight">{total}</span>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

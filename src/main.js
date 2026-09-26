@@ -5,7 +5,7 @@ import Logo from "./assets/Logo.png";
 import LogoText from "./assets/logo-text.png";
 import Grid from "./assets/grid-bg.png";
 
-const Component_App = ({}) => {
+const Component_App = ({ }) => {
   const activeExample = observe(null)
 
   const examples = {

@@ -21,8 +21,8 @@
   outline: 0;
   box-sizing: border-box;
   color: hsla(52, 94%, 94%, 1);
+  user-select: none;
 }
-
 
 html,
 body {
@@ -98,6 +98,12 @@ button {
   color: var(--light);
 }
 
+button:disabled,
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 button:hover {
   background: var(--secondary);
 }
@@ -161,7 +167,7 @@ table {
 }
 
 table thead tr {
-  position: sticky;
+  /* position: sticky; */
   top: 0px; 
   background: var(--black)
 }
@@ -177,6 +183,32 @@ table tr:nth-child(even) {
   background-color: var(--primary-light);
 }
 
+.modal::before {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
+.modal {
+  background: var(--primary);
+  border: solid 1px var(--accent);
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
 
 
